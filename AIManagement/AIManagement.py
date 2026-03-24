@@ -6,25 +6,28 @@ import json
 
 
 def load_prompt_from_md():
-    """从md文件加载系统提示词"""
-    md_path = os.path.join(os.path.dirname(__file__), "Huibi_AI_Analysis_Prompt.md")
-    if os.path.exists(md_path):
-        with open(md_path, "r", encoding="utf-8") as f:
-            content = f.read()
-            # 提取核心内容（去除markdown标题和格式）
-            lines = content.split('\n')
-            # 找到主要内容开始的位置（跳过标题和说明）
-            core_lines = []
-            skip_section = False
-            for line in lines:
-                # 跳过文件信息部分
-                if line.startswith('## 一、项目背景') or line.startswith('## 二、技术方案'):
-                    skip_section = False
-                if line.startswith('## 八、输出格式') or line.startswith('## 九、参考'):
-                    skip_section = True
-                if not skip_section and line.strip() and not line.startswith('# ') and not line.startswith('## '):
-                    core_lines.append(line)
-            return '\n'.join(core_lines)
+    """从md或txt文件加载系统提示词"""
+    base_dir = os.path.dirname(__file__)
+    # 优先找.md文件，找不到就找.txt文件
+    possible_files = ["Huibi_AI_Analysis_Prompt.md", "AI提示词文档.txt"]
+    
+    for filename in possible_files:
+        file_path = os.path.join(base_dir, filename)
+        if os.path.exists(file_path):
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+                # 提取核心内容（去除markdown标题和格式）
+                lines = content.split('\n')
+                core_lines = []
+                skip_section = False
+                for line in lines:
+                    if line.startswith('## 一、项目背景') or line.startswith('## 二、技术方案'):
+                        skip_section = False
+                    if line.startswith('## 八、输出格式') or line.startswith('## 九、参考'):
+                        skip_section = True
+                    if not skip_section and line.strip() and not line.startswith('# ') and not line.startswith('## '):
+                        core_lines.append(line)
+                return '\n'.join(core_lines)
     return None
 
 # 设置页面的配置项
