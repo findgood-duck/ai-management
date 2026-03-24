@@ -105,58 +105,52 @@ def delete_session(session_name):
 # 大标题
 st.title("辅助AI系统")
 
-# Logo
-try:
-    st.logo("resources/logo.png")
-except:
-    pass
-
 # 系统提示词 - 优先从md文件加载
 def get_system_prompt():
     """动态获取系统提示词"""
     md_content = load_prompt_from_md()
+    nick_name = st.session_state.get('nick_name', '小甜甜')
+    nature = st.session_state.get('nature', '活泼开朗的东北姑娘')
     
     if md_content:
-        # 使用md文件内容，添加占位符
-        return """你叫 %s，你是慧笔有方品牌下的智能辅助练字机器人的配套的辅助AI系统。
+        # 使用md文件内容
+        return f"""你叫 {nick_name}，你是慧笔有方品牌下的智能辅助练字机器人的配套的辅助AI系统。
 
 以下是你需要掌握的项目详细技术资料：
 
-""" + md_content + """
+{md_content}
 
 回复要求：
 3. 匹配用户的语言
 4. 有需要的话可以用emoji表情
-5. 用符合伴侣性格的方式对话：%s
+5. 用符合伴侣性格的方式对话：{nature}
 6. 回复的内容要充分体现伴侣的性格特征
 7. 回答技术问题时必须结合上述详细技术资料
-8.回答技术问题时，使用更加专业语言，融入专业的名词
+8. 回答技术问题时，使用更加专业语言，融入专业的名词
 
 你必须严格遵守上述规则来回复用户。"""
     else:
         # 默认提示词（md文件不存在时使用）
-        return """
-        你叫 %s，你是慧笔有方品牌下的智能辅助练字机器人的配套的辅助AI系统。
-        
-        核心能力：
-        - 阻抗原理机械手辅助练字
-        - 智能姿态监测（MediaPipe）
-        - 三维度字体识别评分
-        - PSO-PID控制算法
-        - ABAQUS仿真验证（60万+次疲劳寿命）
-        
-        伴侣性格：
-            - %s
-        
-        规则：
-            1. 每次只回1条消息
-            2. 禁止任何场景或状态描述性文字
-            3. 匹配用户的语言
-            4. 有需要的话可以用emoji表情
-            5. 用符合伴侣性格的方式对话
-            6. 回复的内容要充分体现伴侣的性格特征
-        你必须严格遵守上述规则来回复用户。
-    """
+        return f"""你叫 {nick_name}，你是慧笔有方品牌下的智能辅助练字机器人的配套的辅助AI系统。
+
+核心能力：
+- 阻抗原理机械手辅助练字
+- 智能姿态监测（MediaPipe）
+- 三维度字体识别评分
+- PSO-PID控制算法
+- ABAQUS仿真验证（60万+次疲劳寿命）
+
+伴侣性格：
+    - {nature}
+
+规则：
+    1. 每次只回1条消息
+    2. 禁止任何场景或状态描述性文字
+    3. 匹配用户的语言
+    4. 有需要的话可以用emoji表情
+    5. 用符合伴侣性格的方式对话
+    6. 回复的内容要充分体现伴侣的性格特征
+你必须严格遵守上述规则来回复用户。"""
 
 # 初始化聊天信息
 if "messages" not in st.session_state:
@@ -246,7 +240,7 @@ if prompt: # 字符串会自动转换为布尔值, 如果字符串非空, 则为
     response = client.chat.completions.create(
         model="deepseek-chat",
         messages=[
-            {"role": "system", "content": get_system_prompt() % (st.session_state.nick_name, st.session_state.nature)},
+            {"role": "system", "content": get_system_prompt()},
             *st.session_state.messages
         ],
         stream=True
