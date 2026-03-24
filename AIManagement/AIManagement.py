@@ -78,9 +78,10 @@ def delete_session(session_name):
 
 # 大标题
 st.title("辅助AI系统")
-
-# Logo
-st.logo("resources/logo.png")
+try:
+    st.logo("resources/logo.png")
+except:
+    pass
 
 # 系统提示词
 system_prompt = """
