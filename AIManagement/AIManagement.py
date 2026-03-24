@@ -4,6 +4,29 @@ from openai import OpenAI
 from datetime import datetime
 import json
 
+
+def load_prompt_from_md():
+    """从md文件加载系统提示词"""
+    md_path = os.path.join(os.path.dirname(__file__), "Huibi_AI_Analysis_Prompt.md")
+    if os.path.exists(md_path):
+        with open(md_path, "r", encoding="utf-8") as f:
+            content = f.read()
+            # 提取核心内容（去除markdown标题和格式）
+            lines = content.split('\n')
+            # 找到主要内容开始的位置（跳过标题和说明）
+            core_lines = []
+            skip_section = False
+            for line in lines:
+                # 跳过文件信息部分
+                if line.startswith('## 一、项目背景') or line.startswith('## 二、技术方案'):
+                    skip_section = False
+                if line.startswith('## 八、输出格式') or line.startswith('## 九、参考'):
+                    skip_section = True
+                if not skip_section and line.strip() and not line.startswith('# ') and not line.startswith('## '):
+                    core_lines.append(line)
+            return '\n'.join(core_lines)
+    return None
+
 # 设置页面的配置项
 st.set_page_config(
     page_title="慧笔有方",
@@ -78,26 +101,54 @@ def delete_session(session_name):
 
 # 大标题
 st.title("辅助AI系统")
-try:
-    st.logo("resources/logo.png")
-except:
-    pass
 
-# 系统提示词
-system_prompt = """
-        你叫 %s，你是慧笔有方品牌下的智能辅助练字机器人的配套的辅助AI系统，
-        你的作用是回答用户对于我们的提问，下面我介绍一下我们的辅助练字机器人：
-        我们核心原理是使用阻抗原理加上机械手部分来帮助人们进行辅助练字，搭载了
-        智能姿态监测+三维度的字体识别。
+# Logo
+st.logo("resources/logo.png")
+
+# 系统提示词 - 优先从md文件加载
+def get_system_prompt():
+    """动态获取系统提示词"""
+    md_content = load_prompt_from_md()
+    
+    if md_content:
+        # 使用md文件内容，添加占位符
+        return """你叫 %s，你是慧笔有方品牌下的智能辅助练字机器人的配套的辅助AI系统。
+
+以下是你需要掌握的项目详细技术资料：
+
+""" + md_content + """
+
+回复要求：
+3. 匹配用户的语言
+4. 有需要的话可以用emoji表情
+5. 用符合伴侣性格的方式对话：%s
+6. 回复的内容要充分体现伴侣的性格特征
+7. 回答技术问题时必须结合上述详细技术资料
+8.回答技术问题时，使用更加专业语言，融入专业的名词
+
+你必须严格遵守上述规则来回复用户。"""
+    else:
+        # 默认提示词（md文件不存在时使用）
+        return """
+        你叫 %s，你是慧笔有方品牌下的智能辅助练字机器人的配套的辅助AI系统。
+        
+        核心能力：
+        - 阻抗原理机械手辅助练字
+        - 智能姿态监测（MediaPipe）
+        - 三维度字体识别评分
+        - PSO-PID控制算法
+        - ABAQUS仿真验证（60万+次疲劳寿命）
+        
+        伴侣性格：
+            - %s
+        
         规则：
             1. 每次只回1条消息
             2. 禁止任何场景或状态描述性文字
             3. 匹配用户的语言
             4. 有需要的话可以用emoji表情
             5. 用符合伴侣性格的方式对话
-            6. 回复的内容, 要充分体现伴侣的性格特征
-        伴侣性格：
-            - %s
+            6. 回复的内容要充分体现伴侣的性格特征
         你必须严格遵守上述规则来回复用户。
     """
 
@@ -189,7 +240,7 @@ if prompt: # 字符串会自动转换为布尔值, 如果字符串非空, 则为
     response = client.chat.completions.create(
         model="deepseek-chat",
         messages=[
-            {"role": "system", "content": system_prompt % (st.session_state.nick_name, st.session_state.nature)},
+            {"role": "system", "content": get_system_prompt() % (st.session_state.nick_name, st.session_state.nature)},
             *st.session_state.messages
         ],
         stream=True
