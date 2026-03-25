@@ -112,7 +112,7 @@ st.title("辅助AI系统")
 
 # 增加logo
 try:
-    st.logo("logofor.png",width=80)
+    st.logo("logofor.png")
 except:
     pass
 
