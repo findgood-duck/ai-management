@@ -105,6 +105,12 @@ def delete_session(session_name):
 # 大标题
 st.title("辅助AI系统")
 
+#增加logo
+try:
+    st.logo("resources/logo.png")
+except:
+    pass
+
 # 系统提示词 - 优先从md文件加载
 def get_system_prompt():
     """动态获取系统提示词"""
