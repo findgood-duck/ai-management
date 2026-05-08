@@ -33,7 +33,7 @@ def load_prompt_from_md():
 
 # 设置页面的配置项
 st.set_page_config(
-    page_title="慧笔有方",
+    page_title="灵笔智控",
     page_icon="🤖",
     layout="wide",  # 布局
     initial_sidebar_state="expanded",  # 控制的是侧边栏的状态
@@ -126,7 +126,7 @@ def get_system_prompt():
 
     if md_content:
         # 使用md文件内容
-        return f"""你叫 {nick_name}，你是慧笔有方品牌下的智能辅助练字机器人的配套的辅助AI系统。
+        return f"""你叫 {nick_name}，你是灵笔智控品牌下的智能辅助练字机器人的配套的辅助AI系统。
 
 以下是你需要掌握的项目详细技术资料：
 
@@ -143,7 +143,7 @@ def get_system_prompt():
 你必须严格遵守上述规则来回复用户。"""
     else:
         # 默认提示词（md文件不存在时使用）
-        return f"""你叫 {nick_name}，你是慧笔有方品牌下的智能辅助练字机器人的配套的辅助AI系统。
+        return f"""你叫 {nick_name}，你是灵笔智控品牌下的智能辅助练字机器人的配套的辅助AI系统。
 
 核心能力：
 - 阻抗原理机械手辅助练字
