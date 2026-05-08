@@ -108,7 +108,7 @@ def delete_session(session_name):
 
 
 # 大标题
-st.title("辅助AI系统")
+st.title("灵机书韵-AI学习助手")
 
 # 增加logo
 try:
