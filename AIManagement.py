@@ -33,7 +33,7 @@ def load_prompt_from_md():
 
 # 设置页面的配置项
 st.set_page_config(
-    page_title="灵笔智控",
+    page_title="灵机书韵",
     page_icon="🤖",
     layout="wide",  # 布局
     initial_sidebar_state="expanded",  # 控制的是侧边栏的状态
